@@ -34,3 +34,5 @@ jobs:
         run: sudo lshw -c memory
       - name: ALL
         run: sudo lshw
+      - name: bench storage
+        run: sudo lsblk
