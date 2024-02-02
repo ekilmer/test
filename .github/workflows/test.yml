@@ -35,4 +35,7 @@ jobs:
       - name: ALL
         run: sudo lshw
       - name: bench storage
-        run: sudo lsblk
+        run: |
+          sudo lsblk
+          sudo hdparm -Ttv /dev/sda1
+          sudo hdparm -Ttv /dev/sdb1
