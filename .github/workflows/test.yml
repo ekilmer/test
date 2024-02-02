@@ -32,3 +32,5 @@ jobs:
         run: sudo cat /proc/cpuinfo
       - name: RAM
         run: sudo lshw -c memory
+      - name: ALL
+        run: sudo lshw
