@@ -26,5 +26,9 @@ jobs:
       - uses: actions/checkout@v3
 
       # Runs a single command using the runners shell
-      - name: Run a one-line script
+      - name: Storage
         run: df -h
+      - name: CPU
+        run: sudo cat /proc/cpuinfo
+      - name: RAM
+        run: sudo lshw -c memory
