@@ -1,31 +1,19 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  linux:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      # Runs a single command using the runners shell
       - name: Storage
         run: df -h
       - name: CPU
@@ -39,3 +27,41 @@ jobs:
           sudo lsblk
           sudo hdparm -Ttv /dev/sda1
           sudo hdparm -Ttv /dev/sdb1
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Summary
+        run: system_profiler SPHardwareDataType
+      - name: Storage Space
+        run: df -H
+      - name: CPU
+        run: sysctl -a | grep machdep.cpu
+      - name: RAM
+        run: system_profiler SPHardwareDataType | grep "  Memory:"
+      - name: ALL
+        run: system_profiler
+      - name: bench storage
+        run: |
+          diskutil list
+          sudo hdparm -Ttv /dev/sda1
+          sudo hdparm -Ttv /dev/sdb1
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Summary
+        run: systeminfo
+      - name: Storage
+        run: fsutil fsinfo drives
+      - name: CPU
+        run: wmic cpu get NumberOfCores
+      - name: RAM
+        run: wmic MEMORYCHIP get banklabel, capacity, caption, devicelocator, partnumber
+      - name: ALL
+        run: Get-ComputerInfo
+      - name: Storage Details
+        run: wmic diskdrive get Name,Model,SerialNumber,Size,Status
