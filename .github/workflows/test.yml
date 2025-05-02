@@ -14,54 +14,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Storage
-        run: df -h
-      - name: CPU
-        run: sudo cat /proc/cpuinfo
-      - name: RAM
-        run: sudo lshw -c memory
-      - name: ALL
-        run: sudo lshw
-      - name: bench storage
+      - name: Restore cache
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}
+          path: ${{github.workspace}}/vcpkg-binary-cache
+
+      - name: Install dependencies
+        env:
+          VCPKG_BINARY_SOURCES: clear;files,${{github.workspace}}/vcpkg-binary-cache,readwrite
         run: |
-          sudo lsblk
-          sudo hdparm -Ttv /dev/sda1
-          sudo hdparm -Ttv /dev/sdb1
-  macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
+          vcpkg install --debug spdlog
 
-      - name: Summary
-        run: system_profiler SPHardwareDataType
-      - name: Storage Space
-        run: df -H
-      - name: CPU
-        run: sysctl -a | grep machdep.cpu
-      - name: RAM
-        run: system_profiler SPHardwareDataType | grep "  Memory:"
-      - name: ALL
-        run: system_profiler
-      - name: bench storage
+      - name: Cleanup vcpkg cache
+        shell: bash
         run: |
-          diskutil list
-          sudo hdparm -Ttv /dev/sda1
-          sudo hdparm -Ttv /dev/sdb1
+          python3 ./cleanup_vcpkg_cache.py "${VCPKG_INSTALLATION_ROOT}/installed" "${{github.workspace}}/vcpkg-binary-cache"
 
-  windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Summary
-        run: systeminfo
-      - name: Storage
-        run: fsutil fsinfo drives
-      - name: CPU
-        run: wmic cpu get NumberOfCores
-      - name: RAM
-        run: wmic MEMORYCHIP get banklabel, capacity, caption, devicelocator, partnumber
-      - name: ALL
-        run: Get-ComputerInfo
-      - name: Storage Details
-        run: wmic diskdrive get Name,Model,SerialNumber,Size,Status
