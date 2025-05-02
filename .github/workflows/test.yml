@@ -34,7 +34,7 @@ jobs:
         env:
           VCPKG_BINARY_SOURCES: clear;files,${{github.workspace}}/vcpkg-binary-cache,readwrite
         run: |
-          vcpkg install --debug spdlog abseil cjson
+          vcpkg install --debug spdlog abseil cjson rapidjson
 
       - name: Cleanup vcpkg cache
         shell: bash
@@ -51,7 +51,7 @@ jobs:
         if: steps.cache.outputs.cache-hit
         # Using `--repo` makes it so that this step doesn't require checking out the
         # repo first.
-        run: gh cache delete --repo ${{ github.repository }} ${{ steps.cache.outputs.cache-primary-key }}
+        run: gh cache delete ${{ steps.cache.outputs.cache-primary-key }}
 
       - name: Save cache
         uses: actions/cache/save@v4
