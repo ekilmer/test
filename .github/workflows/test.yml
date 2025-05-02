@@ -24,7 +24,7 @@ jobs:
         env:
           VCPKG_BINARY_SOURCES: clear;files,${{github.workspace}}/vcpkg-binary-cache,readwrite
         run: |
-          vcpkg install --debug spdlog
+          vcpkg install --debug spdlog abseil
 
       - name: Cleanup vcpkg cache
         shell: bash
