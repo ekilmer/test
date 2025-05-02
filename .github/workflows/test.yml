@@ -14,11 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Caching technique
+      # https://github.com/actions/cache/issues/342#issuecomment-2773231159
       - name: Restore cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
+        id: cache
         with:
           key: ${{ runner.os }}
           path: ${{github.workspace}}/vcpkg-binary-cache
+
+# -------------------------------------------------------------------
 
       - name: Install dependencies
         env:
@@ -31,3 +36,22 @@ jobs:
         run: |
           python3 ./cleanup_vcpkg_cache.py "${VCPKG_INSTALLATION_ROOT}/installed" "${{github.workspace}}/vcpkg-binary-cache"
 
+# -------------------------------------------------------------------
+
+      # Delete the old cache on hit to emulate a cache update. See
+      # https://github.com/actions/cache/issues/342.
+      - name: Delete old cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+        if: steps.cache.outputs.cache-hit
+        # Using `--repo` makes it so that this step doesn't require checking out the
+        # repo first.
+        run: gh cache delete --repo ${{ github.repository }} ${{ steps.cache.outputs.cache-primary-key }}
+
+      - name: Save cache
+        uses: actions/cache/save@v4
+        # Save the cache even if build steps fail.
+        if: always()
+        with:
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+          path: ${{github.workspace}}/vcpkg-binary-cache
