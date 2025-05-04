@@ -25,12 +25,16 @@ jobs:
         uses: actions/cache/restore@v4
         id: cache
         with:
-          key: ${{ runner.os }}-${{ github.ref_name	}}
+          key: ${{ runner.os }}-${{ github.ref_name }}
           restore-keys: |
             ${{ runner.os }}-main
           path: ${{github.workspace}}/vcpkg-binary-cache
 
 # -------------------------------------------------------------------
+
+      - name: Install mono
+        run: |
+          brew install mono
 
       - name: Install dependencies
         env:
