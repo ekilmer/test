@@ -95,7 +95,7 @@ def collect_and_cleanup_cache(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Cleanup the vcpkg cache directory to only include the installed packages"
+        description="Cleanup the vcpkg cache directory to only include installed packages"
     )
     parser.add_argument(
         "vcpkg_install_path",

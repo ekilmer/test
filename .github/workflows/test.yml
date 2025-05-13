@@ -40,7 +40,7 @@ jobs:
         env:
           VCPKG_BINARY_SOURCES: clear;files,${{github.workspace}}/vcpkg-binary-cache,readwrite
         run: |
-          vcpkg install --debug spdlog abseil
+          vcpkg install --debug spdlog abseil cjson rapidjson
 
       - name: Cleanup vcpkg cache
         shell: bash
